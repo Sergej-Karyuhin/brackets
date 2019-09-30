@@ -1,105 +1,28 @@
 module.exports = function check(str, bracketsConfig) {
-  let brackets = str.split('');
-  let counter = 0;
   let stack = [];
-  let special_bracket = 0;
-  let n = 0;
+  let res;
 
-  for (let i = 0; i < brackets.length; i++) {
-    if (brackets[i] == "|") {
-      special_bracket++;
+  str.split('').forEach((item, i) => {
+
+    if(i == 0) {
+      stack.push(item);
+      return;
     }
-  }
 
-  if (special_bracket !== 0) {
-  if (special_bracket % 2 == 0) {
-    n = special_bracket / 2;
-    for (let i = 0; i < brackets.length; i++) {
-      if (brackets[i] == "|") {
-        if (n > 0) {
-          brackets[i] = "open";
-          n--;
-        }
-        else {
-          brackets[i] = "closed";
-        }
-      }
+    let lastOpen = bracketsConfig.find(type =>
+      stack[stack.length - 1] == type[0]);
+
+    lastOpen = lastOpen && lastOpen[1];
+
+    if(item != lastOpen){
+      stack.push(item);
     }
-  }
-  else {
-    return false;
-  }
-  }
-
-  for (let i = 0; i < brackets.length; i++) {
-    if (brackets[i] == "(" || brackets[i] == "["
-    || brackets[i] == "{" || brackets[i] == "open") {
-      counter++;
-      stack.push(brackets[i]);
+    else{
+      stack.pop();
     }
-    else {
 
-      switch (brackets[i]) {
+  });
 
-        case ")":
-          if (stack[stack.length - 1] == "(") {
-            counter--;
-            stack.pop();
-            if (counter < 0) {
-              return false;
-            }
-          }
-          else {
-            return false;
-          }
-          break;
-
-        case "]":
-          if (stack[stack.length - 1] == "[") {
-            counter--;
-            stack.pop();
-            if (counter < 0) {
-              return false;
-            }
-          }
-          else {
-            return false;
-          }
-          break;
-
-        case "}":
-          if (stack[stack.length - 1] == "{") {
-            counter--;
-            stack.pop();
-            if (counter < 0) {
-              return false;
-            }
-          }
-          else {
-            return false;
-          }
-          break;
-
-          case "closed":
-            if (stack[stack.length - 1] == "open") {
-              counter--;
-              stack.pop();
-              if (counter < 0) {
-                return false;
-              }
-            }
-            else {
-              return false;
-            }
-            break;
-    }
-  }
-}
-
-  if (counter == 0) {
-    return true;
-  }
-  else {
-    return false;
-  }
+  if(stack.length == 0) return true;
+  return false;
 }
